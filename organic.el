@@ -45,7 +45,7 @@
                                ("melpa" . "https://melpa.org/packages/")
                                ("org" . "https://orgmode.org/elpa/")))))
   ; set installation prefix
-  (setq package-user-dir (concat (getenv "PWD") "/build"))
+  (setq package-user-dir (concat (file-truename "/build")))
   (make-directory package-user-dir t)
   ; activate all the packages (in particular autoloads)
   (package-initialize)

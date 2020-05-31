@@ -3,7 +3,7 @@
 # Organic.el — command line interface for Emacs Org-mode.
 # Copyright © 2020 Ivan Gankevich
 # 
-# This file is part of Org.el.
+# This file is part of Organic.el.
 # 
 # Virtual Testbed is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,5 +18,4 @@
 # You should have received a copy of the GNU General Public License
 # along with Virtual Testbed.  If not, see <https://www.gnu.org/licenses/>.
 
-export PWD=$(pwd)
 exec emacs --batch --quick --load=/usr/share/emacs/site-lisp/organic.el -- "$@"
