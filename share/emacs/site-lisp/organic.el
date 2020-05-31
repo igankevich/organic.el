@@ -1,3 +1,21 @@
+;; Organic.el — command line interface for Emacs Org-mode.
+;; Copyright © 2020 Ivan Gankevich
+;; 
+;; This file is part of Organic.el.
+;; 
+;; Virtual Testbed is free software: you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+;; 
+;; Virtual Testbed is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+;; 
+;; You should have received a copy of the GNU General Public License
+;; along with Virtual Testbed.  If not, see <https://www.gnu.org/licenses/>.
+
 (defun usage ()
   (message "usage: org action [options] files")
   (message "  init                      install/update emacs packages")
@@ -11,8 +29,8 @@
   (message "No other init files are read by the programme.")
   (kill-emacs 1))
 
-(defconst %packages "./.emacs/packages.el")
-(defconst %config "./.emacs/config.el")
+(defconst %packages "./.org/packages.el")
+(defconst %config "./.org/config.el")
 
 (defun org-export/init ()
   (require 'package)

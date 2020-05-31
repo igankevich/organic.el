@@ -1,6 +1,8 @@
-Org is a [[https://www.gnu.org/software/emacs/manual/html_node/elisp/][Emacs Lisp]] script that
-converts [[https://orgmode.org/][Org-mode]] files to various formats from the command line
-that cares about reproducibility.
+Organic.el is a command line interface for Emacs Org-mode.
+It is implemented as a
+[[https://www.gnu.org/software/emacs/manual/html_node/elisp/][Emacs Lisp]] script that
+processes [[https://orgmode.org/][Org-mode]] files specified in the command line.
+Currently it provides an ability to export, publish and execute Org-mode files.
 
 The following commands convert the README file to the supported formats.
 #+begin_src shell
