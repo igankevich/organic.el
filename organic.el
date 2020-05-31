@@ -17,23 +17,37 @@
 ;; along with Virtual Testbed.  If not, see <https://www.gnu.org/licenses/>.
 
 (defun usage ()
-  (message "usage: org action [options] files")
+  (message "usage: org action ...")
   (message "  init                      install/update emacs packages")
+  (message "    -d directory            build directory (default: build)")
   (message "  export [options] files    export orgmode file")
   (message "    -o format               output format (latex, beamer, odt, ascii, html, md)")
   (message "    -O format               final format (pdf)")
   (message "    -d directory            build directory (default: build)")
   (message "  publish                   publish orgmode as web-site")
-  (message "  execute file line         execute org-babel source code block")
-  (message "Put custom Emacs configuration in .org-export.el in the current directory.")
-  (message "No other init files are read by the programme.")
+  (message "    -d directory            build directory (default: build)")
+  (message "  execute file [line]       execute org-babel source code block")
+  (message "    -d directory            build directory (default: build)")
+  (message "Put package list in .org/packages.el in the current directory.")
+  (message "Put custom Emacs configuration in .org/config.el in the current directory.")
   (kill-emacs 1))
 
 (defconst %packages "./.org/packages.el")
 (defconst %config "./.org/config.el")
+(defconst %build-directory "./build")
 
-(defun org-export/init ()
+(defun org-export/init (argv)
   (require 'package)
+  (defvar build-directory %build-directory)
+  (defvar prev-arg nil)
+  (dolist (arg argv)
+    (progn
+      (cond
+        ((not prev-arg) t)
+        ((string-equal prev-arg "-d") (setq build-directory arg))
+        (t t))
+      (setq prev-arg arg)))
+  (message (format "build-directory: %s" build-directory))
   (if (file-exists-p %packages)
     (load-file %packages)
     (progn
@@ -45,7 +59,7 @@
                                ("melpa" . "https://melpa.org/packages/")
                                ("org" . "https://orgmode.org/elpa/")))))
   ; set installation prefix
-  (setq package-user-dir (concat (file-truename "./build")))
+  (setq package-user-dir (file-truename build-directory))
   (make-directory package-user-dir t)
   ; activate all the packages (in particular autoloads)
   (package-initialize)
@@ -90,11 +104,15 @@
               (concat "-output-directory=" build-directory)
               "-f" file)
         " ")))
-  (rename-file file (file-name-as-directory build-directory)))
+  (rename-file file (file-name-as-directory build-directory) t))
+
+(defun org-export/init-fast (build-directory)
+  (setq package-user-dir (file-truename build-directory))
+  (package-initialize)
+  (if (file-exists-p %config) (load-file %config)))
 
 (defun org-export/export (argv)
-  (if (file-exists-p %config) (load-file %config))
-  (defvar build-directory "build")
+  (defvar build-directory %build-directory)
   (defvar format-1 nil)
   (defvar format-2 nil)
   (defvar prev-arg nil)
@@ -112,6 +130,8 @@
   (message (format "files: %s" files))
   (message (format "output-format: %s" format-1))
   (message (format "final-format: %s" format-2))
+  (message (format "build-directory: %s" build-directory))
+  (org-export/init-fast build-directory)
   (if (or (null files) (null format-1))
     (usage))
   (dolist (file files)
@@ -134,7 +154,7 @@
            (t (org-export/default-latex->pdf output-file build-directory))))
         ((fboundp convert) (funcall convert output-file build-directory))
         ((fboundp convert-default) (funcall convert-default output-file build-directory))
-        ((null format-2) (rename-file output-file (file-name-as-directory build-directory)))
+        ((null format-2) (rename-file output-file (file-name-as-directory build-directory) t))
         (t
           (progn
             (message (format "Unable to find conversion function org-export/%s->%s"
@@ -142,11 +162,31 @@
             (kill-emacs 1)))))))
 
 (defun org-export/publish (argv)
-  (if (file-exists-p %config) (load-file %config))
+  (defvar build-directory %build-directory)
+  (defvar prev-arg nil)
+  (dolist (arg argv)
+    (progn
+      (cond
+        ((not prev-arg) t)
+        ((string-equal prev-arg "-d") (setq build-directory arg))
+        (t t))
+      (setq prev-arg arg)))
+  (message (format "build-directory: %s" build-directory))
+  (org-export/init-fast build-directory)
   (org-publish-all t))
 
 (defun org-export/execute (argv)
-  (if (file-exists-p %config) (load-file %config))
+  (defvar build-directory %build-directory)
+  (defvar prev-arg nil)
+  (dolist (arg argv)
+    (progn
+      (cond
+        ((not prev-arg) t)
+        ((string-equal prev-arg "-d") (setq build-directory arg))
+        (t t))
+      (setq prev-arg arg)))
+  (message (format "build-directory: %s" build-directory))
+  (org-export/init-fast build-directory)
   (defun buffer-whole-string (buffer)
     (with-current-buffer buffer
                          (save-restriction
@@ -175,7 +215,7 @@
   (defvar action (elt argv 1))
   (message (format "action: %s" action))
   (cond
-    ((string-equal action "init") (org-export/init))
+    ((string-equal action "init") (org-export/init (cddr argv)))
     ((string-equal action "export") (org-export/export (cddr argv)))
     ((string-equal action "publish") (org-export/publish (cddr argv)))
     ((string-equal action "execute") (org-export/execute (cddr argv)))
