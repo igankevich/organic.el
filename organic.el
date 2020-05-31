@@ -90,9 +90,10 @@
               (concat "-output-directory=" build-directory)
               "-f" file)
         " ")))
-  (delete-file file))
+  (rename-file file (file-name-as-directory build-directory)))
 
 (defun org-export/export (argv)
+  (if (file-exists-p %config) (load-file %config))
   (defvar build-directory "build")
   (defvar format-1 nil)
   (defvar format-2 nil)
