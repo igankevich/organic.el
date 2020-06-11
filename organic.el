@@ -3,18 +3,18 @@
 ;; 
 ;; This file is part of Organic.el.
 ;; 
-;; Virtual Testbed is free software: you can redistribute it and/or modify
+;; Organic.el is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
 ;; (at your option) any later version.
 ;; 
-;; Virtual Testbed is distributed in the hope that it will be useful,
+;; Organic.el is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 ;; 
 ;; You should have received a copy of the GNU General Public License
-;; along with Virtual Testbed.  If not, see <https://www.gnu.org/licenses/>.
+;; along with Organic.el.  If not, see <https://www.gnu.org/licenses/>.
 
 (defun usage ()
   (message "usage: org action ...")
@@ -95,6 +95,8 @@
          (kill-emacs 1)))))
 
 (defun org-export/default-latex->pdf (file build-directory)
+  ;; delete old TeX file (otherwise latemk compiles the old file)
+  (delete-file (concat (file-name-as-directory build-directory) file))
   (message
     (shell-command-to-string
       (mapconcat
@@ -140,6 +142,7 @@
       (make-directory build-directory t)
       (defvar output-file
         (concat (file-name-sans-extension file) "." (org-export/format->extension format-1)))
+      (message (format "output-file: %s" output-file))
       (defvar convert
         (intern-soft (concat "org-export/" format-1 "->" format-2)))
       (defvar convert-default
@@ -159,7 +162,8 @@
           (progn
             (message (format "Unable to find conversion function org-export/%s->%s"
                              format-1 format-2))
-            (kill-emacs 1)))))))
+            (kill-emacs 1))))
+      )))
 
 (defun org-export/publish (argv)
   (defvar build-directory %build-directory)

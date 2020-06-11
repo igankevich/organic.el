@@ -15,10 +15,10 @@ org export -o html README.org          # export to HTML
 org export -o txt README.org           # export to plain text
 #+end_src
 
-Org uses repository-local configuration to fetch the packages and configure Emacs.
-File ~.org/packages.el~ contains package-agnostic configuration and is used to
-list packages that are required to build and export your Org-mode file.
-Here is an example (and the default) file.
+Organic.el uses repository-local configuration to fetch the packages and
+configure Emacs.  File ~.org/packages.el~ contains package-agnostic
+configuration and is used to list packages that are required to build and export
+your Org-mode file.  Here is an example (and the default) file.
 #+begin_src elisp
 ; list the packages you want
 (setq package-list '(org org-plus-contrib org-ref htmlize gnuplot))

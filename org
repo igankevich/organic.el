@@ -5,17 +5,17 @@
 # 
 # This file is part of Organic.el.
 # 
-# Virtual Testbed is free software: you can redistribute it and/or modify
+# Organic.el is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 # 
-# Virtual Testbed is distributed in the hope that it will be useful,
+# Organic.el is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 # 
 # You should have received a copy of the GNU General Public License
-# along with Virtual Testbed.  If not, see <https://www.gnu.org/licenses/>.
+# along with Organic.el.  If not, see <https://www.gnu.org/licenses/>.
 
-exec emacs --batch --quick --load=/usr/share/emacs/site-lisp/organic.el -- "$@"
+exec emacs --batch --quick --load=$(dirname $0)/organic.el -- "$@"
