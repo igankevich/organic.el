@@ -177,6 +177,7 @@
       (setq prev-arg arg)))
   (message (format "build-directory: %s" build-directory))
   (org-export/init-fast build-directory)
+  (require 'org)
   (org-publish-all t))
 
 (defun org-export/execute (argv)
