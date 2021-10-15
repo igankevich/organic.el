@@ -79,9 +79,11 @@
     ((string-equal fmt "ascii") "txt")
     ((string-equal fmt "html") "html")
     ((string-equal fmt "md") "md")
+    ((string-equal fmt "el") "el")
+    ((string-equal fmt "scm") "scm")
     (t fmt)))
 
-(defun org-export/export-file (file fmt)
+(defun org-export/export-file (file fmt output-file)
   (find-file file)
   (cond
     ((string-equal fmt "latex") (org-latex-export-to-latex))
@@ -90,6 +92,8 @@
     ((string-equal fmt "ascii") (org-ascii-export-to-ascii))
     ((string-equal fmt "html") (org-html-export-to-html))
     ((string-equal fmt "md") (org-md-export-to-markdown))
+    ((string-equal fmt "el")
+     (write-region (prin1-to-string (org-element-parse-buffer)) nil output-file))
     (t (progn
          (message (format "Unknown export format: %s" format-1))
          (kill-emacs 1)))))
@@ -107,6 +111,16 @@
               "-f" file)
         " ")))
   (rename-file file (file-name-as-directory build-directory) t))
+
+(defun org-export/default-el->scm (file build-directory)
+  (find-file file)
+  (let* ((s1 (buffer-string))
+         (s2 (replace-regexp-in-string ":parent #[0-9]+?" "" s1))
+         (s3 (replace-regexp-in-string "#(" "(prop " s2))
+         (output-file (concat (file-name-sans-extension file) "." (org-export/format->extension "scm"))))
+    (write-region (format "'%s" s3) nil output-file)
+    (rename-file file (file-name-as-directory build-directory) t)
+    (rename-file output-file (file-name-as-directory build-directory) t)))
 
 (defun org-export/init-fast (build-directory)
   (setq package-user-dir (file-truename build-directory))
@@ -138,10 +152,10 @@
     (usage))
   (dolist (file files)
     (progn
-      (org-export/export-file file format-1)
-      (make-directory build-directory t)
       (defvar output-file
         (concat (file-name-sans-extension file) "." (org-export/format->extension format-1)))
+      (org-export/export-file file format-1 output-file)
+      (make-directory build-directory t)
       (message (format "output-file: %s" output-file))
       (defvar convert
         (intern-soft (concat "org-export/" format-1 "->" format-2)))
@@ -162,8 +176,7 @@
           (progn
             (message (format "Unable to find conversion function org-export/%s->%s"
                              format-1 format-2))
-            (kill-emacs 1))))
-      )))
+            (kill-emacs 1)))))))
 
 (defun org-export/publish (argv)
   (defvar build-directory %build-directory)
